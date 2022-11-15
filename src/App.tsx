@@ -2,6 +2,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
+import DraggableCard from "./Components/DraggableCard";
 
 
 const Wrapper = styled.div`
@@ -28,12 +29,7 @@ const Board = styled.div`
   min-height: 200px;
 `;
 
-const Card = styled.div`
-  border-radius: 5px;
-  margin-bottom: 5px;
-  padding: 10px 10px;
-  background-color: ${(props) => props.theme.cardColor};
-`;
+
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState)
@@ -55,13 +51,9 @@ function App() {
           <Droppable droppableId="one">
             {(magic) => (
               <Board ref={magic.innerRef} {...magic.droppableProps}>
-                {toDos.map((todo, index) => (<Draggable key={todo} draggableId={todo} index={index}>
-                  {/* key와 draggableId가 같아야 함(beautiful dnd) */}
-                  {(magic) => (
-                    <Card ref={magic.innerRef} {...magic.draggableProps} {...magic.dragHandleProps}>{todo}
-                    </Card>
-                  )}
-                </Draggable>))}
+                {toDos.map((toDo, index) => (
+                  <DraggableCard key={toDo} toDo={toDo} index={index} />
+                ))}
                 {magic.placeholder}
                 {/* 드래그 할 때 사이즈 변화 x */}
               </Board>
