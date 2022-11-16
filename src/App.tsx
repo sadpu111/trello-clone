@@ -33,18 +33,30 @@ function App() {
   const onDragEnd = (info: DropResult) => { // drag가 끝났을 때 실행되는 함수
     console.log(info);
     const { destination, draggableId, source } = info;
+    if (!destination) return;
     if (destination?.droppableId === source.droppableId) { // 동일 board 내 이동
       setToDos(allBoards => {
         const boardCopy = [...allBoards[source.droppableId]];
         boardCopy.splice(source.index, 1);
         boardCopy.splice(destination?.index, 0, draggableId)
-        return { ...allBoards, // (1) 기존 보드와
+        return {
+          ...allBoards, // (1) 기존 보드와
           [source.droppableId]: boardCopy, // (2) 이동이 발생한 보드에: 위의 boardCopy를 대입
-
-
-
         } // preToDos는 객체이므로 boardcopy(배열)이 아닌 전체 객체를 리턴해야 한다
       });
+    }
+    if (destination?.droppableId !== source.droppableId) { // 타 baord로의 이동
+      setToDos((allBoards) => {
+        const sourceBoard = [...allBoards[source.droppableId]];
+        const destinationBoard = [...allBoards[destination.droppableId]];
+        sourceBoard.splice(source.index, 1);
+        destinationBoard.splice(destination.index, 0, draggableId);
+        return {
+          ...allBoards,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
+        }
+      })
     }
 
     /*     setToDos(preToDo => {
