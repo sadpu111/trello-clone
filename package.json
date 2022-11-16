@@ -60,5 +60,5 @@
     "@types/react-helmet": "^6.1.5",
     "@types/styled-components": "^5.1.26"
   },
-  "homepage": "https://sadpu111.github.io/react-state-management"
+  "homepage": "https://sadpu111.github.io/trello-clone"
 }

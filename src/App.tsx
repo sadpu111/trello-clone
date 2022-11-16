@@ -7,8 +7,7 @@ import Board from "./Components/Board";
 
 const Wrapper = styled.div`
   display: flex;
-  max-width: 680px;
-  width: 100%;
+  width: 100vw;
   margin: 0 auto;
   justify-content: center;
   align-items: center;
@@ -30,14 +29,14 @@ const Boards = styled.div`
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState)
   const onDragEnd = (info: DropResult) => { // drag가 끝났을 때 실행되는 함수
-    console.log(info);
     const { destination, draggableId, source } = info;
     if (!destination) return;
     if (destination?.droppableId === source.droppableId) { // 동일 board 내 이동
       setToDos(allBoards => {
         const boardCopy = [...allBoards[source.droppableId]];
+        const taskObj = boardCopy[source.index]; // 원소가 기존의 배열의 원소에서 하나의 객체({id: number, text: string}으로 바뀌었기 때문
         boardCopy.splice(source.index, 1);
-        boardCopy.splice(destination?.index, 0, draggableId)
+        boardCopy.splice(destination?.index, 0, taskObj) // 해당 자리에 배열의 원소인 객체를 추가
         return {
           ...allBoards, // (1) 기존 보드와
           [source.droppableId]: boardCopy, // (2) 이동이 발생한 보드에: 위의 boardCopy를 대입
@@ -47,9 +46,10 @@ function App() {
     if (destination?.droppableId !== source.droppableId) { // 타 baord로의 이동
       setToDos((allBoards) => {
         const sourceBoard = [...allBoards[source.droppableId]];
+        const taskObj = sourceBoard[source.index];
         const destinationBoard = [...allBoards[destination.droppableId]];
         sourceBoard.splice(source.index, 1);
-        destinationBoard.splice(destination.index, 0, draggableId);
+        destinationBoard.splice(destination.index, 0, taskObj);
         return {
           ...allBoards,
           [source.droppableId]: sourceBoard,
@@ -72,7 +72,7 @@ function App() {
       <Wrapper>
         <Boards>
           {Object.keys(toDos).map((boardId) => <Board key={boardId} boardId={boardId} toDos={toDos[boardId]} />)}
-          {/* Board에 표시될 toDos는 toDosState 안의 각각의 boardId(to_do, doing, done)의 배열들. Board의 property로서의 toDos는 Baord 컴포넌트에서 정의 */}
+          {/* Board에 표시될 toDos는 toDosState 안의 각각의 boardId(to do, doing, done)의 배열들. Board의 property로서의 toDos는 Baord 컴포넌트에서 정의 */}
         </Boards>
       </Wrapper>
     </DragDropContext>
