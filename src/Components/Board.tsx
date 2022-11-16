@@ -2,6 +2,10 @@ import { Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DraggableCard from "./DraggableCard";
 
+interface IAreaProps {
+  isDraggingOver: boolean;
+  isDraggingFromThis: boolean;
+}
 
 const Wrapper = styled.div`
 width: 300px;
@@ -10,6 +14,8 @@ padding-top: 10px;
 background-color: ${(props) => props.theme.boardColor};
 border-radius: 5px;
 min-height: 300px;
+display: flex;
+flex-direction: column;
 `;
 
 const Title = styled.h2`
@@ -17,6 +23,13 @@ const Title = styled.h2`
   font-weight: 600;
   margin-bottom: 10px;
   font-size: 18px;
+`;
+
+const Area = styled.div<IAreaProps>`
+background-color: ${props => props.isDraggingOver ? "pink" : props.isDraggingFromThis ? "red" : "blue"};
+flex-grow: 1;
+transition: background-color 0.3s ease-in-out;
+
 `;
 
 interface IBoardProps {
@@ -29,14 +42,14 @@ function Board({toDos, boardId}: IBoardProps) {
     <Wrapper>
       <Title>{boardId}</Title>
     <Droppable droppableId={boardId}>
-      {(magic) => (
-        <div ref={magic.innerRef} {...magic.droppableProps}>
+      {(provided, snapshot) => (
+        <Area isDraggingOver={snapshot.isDraggingOver} isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)} ref={provided.innerRef} {...provided.droppableProps}>
           {toDos.map((toDo, index) => (
             <DraggableCard key={toDo} toDo={toDo} index={index} />
           ))}
-          {magic.placeholder}
+          {provided.placeholder}
           {/* 드래그 할 때 사이즈 변화 x */}
-        </div>
+        </Area>
       )}
     </Droppable>
     </Wrapper>

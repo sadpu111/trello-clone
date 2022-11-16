@@ -27,7 +27,6 @@ const Boards = styled.div`
 
 
 
-
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState)
   const onDragEnd = (info: DropResult) => { // drag가 끝났을 때 실행되는 함수
