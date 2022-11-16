@@ -3,7 +3,6 @@ import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
 import Board from "./Components/Board";
-import DraggableCard from "./Components/DraggableCard";
 
 
 const Wrapper = styled.div`
@@ -21,6 +20,9 @@ const Boards = styled.div`
   width: 100%;
   gap: 10px;
   grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 `;
 
 
@@ -28,8 +30,23 @@ const Boards = styled.div`
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState)
-  const onDragEnd = ({ draggableId, destination, source }: DropResult) => { // drag가 끝났을 때 실행되는 함수
-    if (!destination) return; // 드래그가 끝나는 곳이 destination이 아니라면 그냥 놔둠
+  const onDragEnd = (info: DropResult) => { // drag가 끝났을 때 실행되는 함수
+    console.log(info);
+    const { destination, draggableId, source } = info;
+    if (destination?.droppableId === source.droppableId) { // 동일 board 내 이동
+      setToDos(allBoards => {
+        const boardCopy = [...allBoards[source.droppableId]];
+        boardCopy.splice(source.index, 1);
+        boardCopy.splice(destination?.index, 0, draggableId)
+        return { ...allBoards, // (1) 기존 보드와
+          [source.droppableId]: boardCopy, // (2) 이동이 발생한 보드에: 위의 boardCopy를 대입
+
+
+
+        } // preToDos는 객체이므로 boardcopy(배열)이 아닌 전체 객체를 리턴해야 한다
+      });
+    }
+
     /*     setToDos(preToDo => {
           const copyToDo = [...preToDo];
           copyToDo.splice(source.index, 1);
@@ -43,8 +60,8 @@ function App() {
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
         <Boards>
-          {Object.keys(toDos).map((boardId) => <Board key={boardId} boardId={boardId} toDos={toDos[boardId]}/>)}
-          {/* Board에 표시될 toDos는 toDosState 안의 각각의 boardId(to_do, doing, done)의 배열들 */}
+          {Object.keys(toDos).map((boardId) => <Board key={boardId} boardId={boardId} toDos={toDos[boardId]} />)}
+          {/* Board에 표시될 toDos는 toDosState 안의 각각의 boardId(to_do, doing, done)의 배열들. Board의 property로서의 toDos는 Baord 컴포넌트에서 정의 */}
         </Boards>
       </Wrapper>
     </DragDropContext>
