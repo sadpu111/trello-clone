@@ -7,19 +7,21 @@ interface IDraggableCardProps {
   index: number;
 }
 
-const Card = styled.div`
+const Card = styled.div<{ isDragging: boolean }>`
+  padding: 10px;
+  background-color: ${(props) => 
+    props.isDragging ? "#e4f2ff" : props.theme.cardColor};
   border-radius: 5px;
   margin-bottom: 5px;
-  padding: 10px 10px;
-  background-color: ${(props) => props.theme.cardColor};
-`;
+  box-shadow: ${(props) =>
+    props.isDragging ? "0px 2px 5px rgba(0, 0, 0, 0.05)" : "none"};`;
 
-function DraggableCard({toDo, index}: IDraggableCardProps ) {
+function DraggableCard({ toDo, index }: IDraggableCardProps) {
   return (
     <Draggable key={toDo} draggableId={toDo} index={index}>
       {/* key와 draggableId가 같아야 함(beautiful dnd) */}
-      {(magic) => (
-        <Card ref={magic.innerRef} {...magic.draggableProps} {...magic.dragHandleProps}>{toDo}
+      {(provided, snapshot) => (
+        <Card isDragging={snapshot.isDragging} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>{toDo}
         </Card>
       )}
     </Draggable>
